@@ -28,7 +28,7 @@ func (sa *SimpleArchiver) countRepeating(data []byte) []byte {
 	}
 
 	res := make([]byte, 0)
-	var count byte
+	var count byte = 1
 	for i := 1; i < len(data); i++ {
 		if data[i] == data[i-1] {
 			count++
