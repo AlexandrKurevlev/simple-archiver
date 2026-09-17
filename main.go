@@ -41,6 +41,18 @@ func (sa *SimpleArchiver) countRepeating(data []byte) []byte {
 	return res
 }
 
+func (sa *SimpleArchiver) createControlByte(count int, isCompressed bool) byte {
+	if count > 127 {
+		count = 127
+	}
+
+	if isCompressed {
+		return byte(128 + count)
+	}
+
+	return byte(count)
+}
+
 func main() {
 	fmt.Println("Простой архиватор запущен")
 }
