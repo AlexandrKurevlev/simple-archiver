@@ -63,7 +63,7 @@ func (sa *SimpleArchiver) compress(data []byte) []byte {
 		if data[right] == data[right-1] {
 			repeats++
 
-			if repeats == minRepeats {
+			if repeats == minRepeats-1 && right < len(data)-1 && data[right] == data[right+1] {
 				notCompressedLen := right - repeats - left + 1
 				for notCompressedLen != 0 {
 					l := min(notCompressedLen, maxGroupLen)
