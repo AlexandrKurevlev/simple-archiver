@@ -53,6 +53,62 @@ func (sa *SimpleArchiver) createControlByte(count int, isCompressed bool) byte {
 	return byte(count)
 }
 
+func (sa *SimpleArchiver) compress(data []byte) []byte {
+	minRepeats := 4
+	maxGroupLen := 127
+
+	res := make([]byte, 0)
+	left, repeats := 0, 1
+	for right := 1; right < len(data); right++ {
+		if data[right] == data[right-1] {
+			repeats++
+
+			if repeats == minRepeats {
+				notCompressedLen := right - repeats - left + 1
+				for notCompressedLen != 0 {
+					l := min(notCompressedLen, maxGroupLen)
+					res = append(res, sa.createControlByte(l, false))
+					res = append(res, data[left:left+l]...)
+					left += l
+					notCompressedLen -= l
+				}
+			}
+		} else {
+			if repeats >= minRepeats {
+				for repeats != 0 {
+					l := min(repeats, maxGroupLen)
+					res = append(res, sa.createControlByte(l, true))
+					res = append(res, data[right-1])
+					left += l
+					repeats -= l
+				}
+			}
+			repeats = 1
+		}
+	}
+
+	if repeats >= minRepeats {
+		for repeats != 0 {
+			l := min(repeats, maxGroupLen)
+			res = append(res, sa.createControlByte(l, true))
+			res = append(res, data[len(data)-1])
+			left += l
+			repeats -= l
+		}
+	} else {
+		notCompressedLen := len(data) - left
+		for notCompressedLen != 0 {
+			l := min(notCompressedLen, maxGroupLen)
+			res = append(res, sa.createControlByte(l, false))
+			res = append(res, data[left:left+l]...)
+			left += l
+			notCompressedLen -= l
+		}
+	}
+
+	return res
+}
+
 func main() {
 	fmt.Println("Простой архиватор запущен")
 }
