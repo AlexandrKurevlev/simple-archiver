@@ -54,7 +54,7 @@ func (sa *SimpleArchiver) createControlByte(count int, isCompressed bool) byte {
 }
 
 func (sa *SimpleArchiver) compress(data []byte) []byte {
-	minRepeats := 4
+	minRepeats := 3
 	maxGroupLen := 127
 
 	res := make([]byte, 0)
@@ -63,7 +63,7 @@ func (sa *SimpleArchiver) compress(data []byte) []byte {
 		if data[right] == data[right-1] {
 			repeats++
 
-			if repeats == minRepeats-1 && right < len(data)-1 && data[right] == data[right+1] {
+			if repeats == minRepeats {
 				notCompressedLen := right - repeats - left + 1
 				for notCompressedLen != 0 {
 					l := min(notCompressedLen, maxGroupLen)
