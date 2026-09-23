@@ -54,8 +54,9 @@ func (sa *SimpleArchiver) createControlByte(count int, isCompressed bool) byte {
 }
 
 func (sa *SimpleArchiver) compress(data []byte) []byte {
+	data = sa.compressEmpty(data)
 	if len(data) == 0 {
-		return []byte{}
+		return data
 	}
 
 	minRepeats := 3
