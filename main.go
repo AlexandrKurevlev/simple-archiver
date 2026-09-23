@@ -124,14 +124,15 @@ func (sa *SimpleArchiver) decompress(data []byte) []byte {
 		l := data[i] & 127
 		isCompressed := data[i]&128 == 128
 		fmt.Printf("%x, %b, isCompressed: %t, len: %d\n", data[i], data[i], isCompressed, l)
+		i += 1
 		if isCompressed {
 			for range l {
-				res = append(res, data[i+1])
+				res = append(res, data[i])
 			}
-			i += 2
+			i += 1
 		} else {
-			res = append(res, data[i+1:i+int(l)+1]...)
-			i += int(l) + 1
+			res = append(res, data[i:i+int(l)]...)
+			i += int(l)
 		}
 	}
 
