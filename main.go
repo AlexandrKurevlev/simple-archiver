@@ -141,4 +141,7 @@ func (sa *SimpleArchiver) decompress(data []byte) []byte {
 
 func main() {
 	fmt.Println("Простой архиватор запущен")
+
+	sa := NewArchiver("test")
+	fmt.Println(string(sa.decompress(sa.compress([]byte("ABCDDDDDDDDDDDDDEF")))))
 }
