@@ -54,9 +54,8 @@ func (sa *SimpleArchiver) createControlByte(count int, isCompressed bool) byte {
 }
 
 func (sa *SimpleArchiver) compress(data []byte) []byte {
-	data = sa.compressEmpty(data)
 	if len(data) == 0 {
-		return data
+		return []byte{}
 	}
 
 	minRepeats := 3
@@ -64,7 +63,6 @@ func (sa *SimpleArchiver) compress(data []byte) []byte {
 
 	res := make([]byte, 0)
 	left, repeats := 0, 1
-	_ = sa.countRepeating(data)
 	for right := 1; right < len(data); right++ {
 		if data[right] == data[right-1] {
 			repeats++
