@@ -113,6 +113,22 @@ func (sa *SimpleArchiver) compress(data []byte) []byte {
 	return res
 }
 
+func (sa *SimpleArchiver) decompress(data []byte) []byte {
+	if len(data) == 0 {
+		return []byte{}
+	}
+
+	res := make([]byte, 0)
+	i := 0
+	for i < len(data) {
+		l := data[i] & 127
+		fmt.Println(l)
+		i += int(l) + 1
+	}
+
+	return res
+}
+
 func main() {
 	fmt.Println("Простой архиватор запущен")
 }
