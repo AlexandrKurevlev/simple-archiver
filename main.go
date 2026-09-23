@@ -122,7 +122,7 @@ func (sa *SimpleArchiver) decompress(data []byte) []byte {
 	i := 0
 	for i < len(data) {
 		l := data[i] & 127
-		fmt.Println(l)
+		fmt.Println(data[i])
 		i += int(l) + 1
 	}
 
