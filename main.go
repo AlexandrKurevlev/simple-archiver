@@ -211,7 +211,7 @@ func (sa *SimpleArchiver) DecompressFile(inputPath, outputDir string) error {
 	if err != nil {
 		return err
 	}
-	filenameBytes := make([]byte, 0, filenameLength)
+	filenameBytes := make([]byte, filenameLength)
 	_, err = reader.Read(filenameBytes)
 	if err != nil {
 		return err
