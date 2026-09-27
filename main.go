@@ -223,6 +223,8 @@ func (sa *SimpleArchiver) DecompressFile(inputPath, outputDir string) error {
 		return fmt.Errorf("ошибка создания файла %s: %q", outputPath, err)
 	}
 	defer outputFile.Close()
+
+	return nil
 }
 
 func main() {
