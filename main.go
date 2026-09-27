@@ -147,13 +147,13 @@ func (sa *SimpleArchiver) decompress(data []byte) []byte {
 func (sa *SimpleArchiver) CompressFile(inputPath, outputPath string) error {
 	inputFile, err := os.Open(inputPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("ошибка открытия файла %s: %q", inputPath, err)
 	}
 	defer inputFile.Close()
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("ошибка создания файла %s: %q", outputPath, err)
 	}
 	defer outputFile.Close()
 
@@ -164,12 +164,12 @@ func (sa *SimpleArchiver) CompressFile(inputPath, outputPath string) error {
 	filename := filepath.Base(inputPath)
 	err = writer.WriteByte(byte(len(filename)))
 	if err != nil {
-		return err
+		return fmt.Errorf("ошибка записи длины файла: %q", err)
 	}
 
 	_, err = writer.WriteString(filename)
 	if err != nil {
-		return err
+		return fmt.Errorf("ошибка записи имени файла: %q", err)
 	}
 
 	return nil
