@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -157,7 +158,7 @@ func (sa *SimpleArchiver) CompressFile(inputPath, outputPath string) error {
 	}
 	defer outputFile.Close()
 
-	_ = bufio.NewReader(inputFile)
+	reader := bufio.NewReader(inputFile)
 	writer := bufio.NewWriter(outputFile)
 	defer writer.Flush()
 
@@ -170,6 +171,26 @@ func (sa *SimpleArchiver) CompressFile(inputPath, outputPath string) error {
 	_, err = writer.WriteString(filename)
 	if err != nil {
 		return fmt.Errorf("ошибка записи имени файла: %q", err)
+	}
+
+	for {
+		n, err := reader.Read(sa.buffer)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		compressed := sa.compress(sa.buffer[:n])
+		_, err = writer.Write([]byte{byte(n >> 8), byte(n)})
+		if err != nil {
+			return err
+		}
+		_, err = writer.Write(compressed)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
