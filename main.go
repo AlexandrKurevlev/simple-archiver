@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"os"
@@ -183,7 +184,9 @@ func (sa *SimpleArchiver) CompressFile(inputPath, outputPath string) error {
 		}
 
 		compressed := sa.compress(sa.buffer[:n])
-		_, err = writer.Write([]byte{byte(len(compressed) >> 8), byte(len(compressed))})
+		var size [2]byte
+		binary.BigEndian.PutUint16(size[:], uint16(len(compressed)))
+		_, err = writer.Write(size[:])
 		if err != nil {
 			return err
 		}
