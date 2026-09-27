@@ -183,7 +183,7 @@ func (sa *SimpleArchiver) CompressFile(inputPath, outputPath string) error {
 		}
 
 		compressed := sa.compress(sa.buffer[:n])
-		_, err = writer.Write([]byte{byte(n >> 8), byte(n)})
+		_, err = writer.Write([]byte{byte(len(compressed) >> 8), byte(len(compressed))})
 		if err != nil {
 			return err
 		}
