@@ -224,6 +224,37 @@ func (sa *SimpleArchiver) DecompressFile(inputPath, outputDir string) error {
 	}
 	defer outputFile.Close()
 
+	writer := bufio.NewWriter(outputFile)
+	defer writer.Flush()
+
+	for {
+		var blockSizeByte [2]byte
+		_, err := reader.Read(blockSizeByte[:])
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		blockSize := binary.BigEndian.Uint16(blockSizeByte[:])
+
+		compressed := make([]byte, blockSize)
+		_, err = io.ReadFull(reader, compressed)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		decompressed := sa.decompress(compressed)
+		_, err = writer.Write(decompressed)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
