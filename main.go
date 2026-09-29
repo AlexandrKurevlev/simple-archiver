@@ -331,6 +331,8 @@ func (m model) View() tea.View {
 	var s string
 	if m.state == "menu" {
 		s = m.viewMenu()
+	} else if m.state == "compress" || m.state == "decompress" {
+		s = m.viewInput()
 	}
 	return tea.NewView(s)
 }
@@ -351,6 +353,23 @@ func (m model) viewMenu() string {
 
 	s += "\nИспользуйте стрелки для навигации и enter для выбора\n"
 	s += "Нажмите q для выхода\n"
+	return s
+}
+
+func (m model) viewInput() string {
+	s := "=== Простой архиватор ===\n\n"
+	if m.state == "compress" {
+		s += "Введите путь к файлу для сжатия:\n"
+	} else if m.state == "decompress" {
+		s += "Введите путь к файлу для распаковки:\n"
+	}
+
+	s += m.inputPath + "_\n"
+	if m.err != nil {
+		s += m.err.Error() + "\n"
+	}
+
+	s += "\nEnter для подтверждения, Esc для возврата в меню\n"
 	return s
 }
 
