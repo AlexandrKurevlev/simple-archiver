@@ -7,6 +7,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	tea "charm.land/bubbletea/v2"
 )
 
 type SimpleArchiver struct {
@@ -258,9 +260,83 @@ func (sa *SimpleArchiver) DecompressFile(inputPath, outputDir string) error {
 	return nil
 }
 
-func main() {
-	fmt.Println("Простой архиватор запущен")
+type model struct {
+	archiver  *SimpleArchiver
+	inputPath string
+	state     string
+	choices   []string
+	cursor    int
+	selected  map[int]struct{}
+}
 
-	sa := NewArchiver("test")
-	fmt.Println(string(sa.decompress(sa.compress([]byte("ABCDDDDDDDDDDDDDEF")))))
+func initialModel() model {
+	return model{
+		archiver: NewArchiver(""),
+		state:    "menu",
+		choices:  []string{"Сжать файл", "Распаковать файл", "Выход"},
+	}
+}
+
+func (m model) Init() tea.Cmd {
+	return nil
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+
+	case tea.KeyPressMsg:
+		switch msg.String() {
+
+		case "ctrl+c", "q":
+			return m, tea.Quit
+
+		case "up", "k":
+			if m.cursor > 0 {
+				m.cursor--
+			}
+
+		case "down", "j":
+			if m.cursor < len(m.choices)-1 {
+				m.cursor++
+			}
+
+		case "enter", "space":
+			_, ok := m.selected[m.cursor]
+			if ok {
+				delete(m.selected, m.cursor)
+			} else {
+				m.selected[m.cursor] = struct{}{}
+			}
+		}
+	}
+
+	return m, nil
+}
+
+func (m model) View() tea.View {
+	s := "Простой архиватор\n\n"
+
+	for i, choice := range m.choices {
+
+		cursor := " " // no cursor
+		if m.cursor == i {
+			cursor = ">" // cursor
+		}
+
+		checked := " " // not selected
+		if _, ok := m.selected[i]; ok {
+			checked = "x" // selected
+		}
+
+		// Render the row
+		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
+	}
+
+	s += "\nPress q to quit.\n"
+
+	return tea.NewView(s)
+}
+
+func main() {
+	tea.NewProgram(initialModel()).Run()
 }
