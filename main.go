@@ -132,7 +132,6 @@ func (sa *SimpleArchiver) decompress(data []byte) []byte {
 	for i < len(data) {
 		l := data[i] & 127
 		isCompressed := data[i]&128 == 128
-		fmt.Printf("%x, %b, isCompressed: %t, len: %d\n", data[i], data[i], isCompressed, l)
 		i += 1
 		if isCompressed {
 			for range l {
@@ -271,9 +270,8 @@ type model struct {
 
 func initialModel() model {
 	return model{
-		archiver: NewArchiver(""),
-		state:    "menu",
-		choices:  []string{"Сжать файл", "Распаковать файл", "Выход"},
+		state:   "menu",
+		choices: []string{"Сжать файл", "Распаковать файл", "Выход"},
 	}
 }
 
@@ -343,8 +341,17 @@ func (m model) updateInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.state = "menu"
 
 	case "enter":
-		if len(m.inputPath) == 0 {
+		if len(m.inputPath) != 0 {
+			m.archiver = NewArchiver(m.inputPath)
+			if m.state == "compress" {
+				m.err = m.archiver.CompressFile(m.inputPath, m.inputPath+".sarch")
+			} else {
+				m.err = m.archiver.DecompressFile(m.inputPath, filepath.Dir(m.inputPath))
+			}
 
+			if m.err == nil {
+				m.state = "menu"
+			}
 		}
 
 	case "backspace":
