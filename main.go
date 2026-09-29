@@ -266,7 +266,6 @@ type model struct {
 	state     string
 	choices   []string
 	cursor    int
-	selected  map[int]struct{}
 	err       error
 }
 
@@ -283,31 +282,45 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+
 	switch msg := msg.(type) {
 
 	case tea.KeyPressMsg:
-		switch msg.String() {
+		if m.state == "menu" {
+			return m.updateMenu(msg)
+		}
+	}
 
-		case "ctrl+c", "q":
+	return m, nil
+}
+
+func (m model) updateMenu(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch msg.String() {
+
+	case "ctrl+c", "q":
+		return m, tea.Quit
+
+	case "up", "k":
+		if m.cursor > 0 {
+			m.cursor--
+		}
+
+	case "down", "j":
+		if m.cursor < len(m.choices)-1 {
+			m.cursor++
+		}
+
+	case "enter", "space":
+		switch m.cursor {
+		case 0:
+			m.state = "compress"
+
+		case 1:
+			m.state = "decompress"
+
+		case 2:
 			return m, tea.Quit
 
-		case "up", "k":
-			if m.cursor > 0 {
-				m.cursor--
-			}
-
-		case "down", "j":
-			if m.cursor < len(m.choices)-1 {
-				m.cursor++
-			}
-
-		case "enter", "space":
-			_, ok := m.selected[m.cursor]
-			if ok {
-				delete(m.selected, m.cursor)
-			} else {
-				m.selected[m.cursor] = struct{}{}
-			}
 		}
 	}
 
