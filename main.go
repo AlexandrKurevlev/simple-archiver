@@ -350,7 +350,9 @@ func (m model) updateInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 
 	default:
-		m.inputPath += key
+		if len(key) == 1 {
+			m.inputPath += key
+		}
 	}
 
 	return m, nil
