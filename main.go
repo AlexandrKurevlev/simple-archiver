@@ -267,6 +267,7 @@ type model struct {
 	choices   []string
 	cursor    int
 	selected  map[int]struct{}
+	err       error
 }
 
 func initialModel() model {
