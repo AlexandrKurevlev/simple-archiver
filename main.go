@@ -286,10 +286,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case tea.KeyMsg:
-		if m.state == "menu" {
+		switch m.state {
+		case "menu":
 			return m.updateMenu(msg)
-		} else if m.state == "compress" || m.state == "decompress" {
+
+		case "compress", "decompress":
 			return m.updateInput(msg)
+
 		}
 	}
 
@@ -360,11 +363,15 @@ func (m model) updateInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (m model) View() tea.View {
 	var s string
-	if m.state == "menu" {
+	switch m.state {
+	case "menu":
 		s = m.viewMenu()
-	} else if m.state == "compress" || m.state == "decompress" {
+
+	case "compress", "decompress":
 		s = m.viewInput()
+
 	}
+
 	return tea.NewView(s)
 }
 
@@ -389,9 +396,10 @@ func (m model) viewMenu() string {
 
 func (m model) viewInput() string {
 	s := "=== Простой архиватор ===\n\n"
-	if m.state == "compress" {
+	switch m.state {
+	case "menu":
 		s += "Введите путь к файлу для сжатия:\n"
-	} else if m.state == "decompress" {
+	case "compress", "decompress":
 		s += "Введите путь к файлу для распаковки:\n"
 	}
 
