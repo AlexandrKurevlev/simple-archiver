@@ -315,7 +315,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() tea.View {
-	s := "Простой архиватор\n\n"
+	var s string
+	if m.state == "menu" {
+		s = m.viewMenu()
+	}
+	return tea.NewView(s)
+}
+
+func (m model) viewMenu() string {
+	s := "=== Простой архиватор ===\n\n"
 
 	for i, choice := range m.choices {
 
@@ -324,18 +332,13 @@ func (m model) View() tea.View {
 			cursor = ">" // cursor
 		}
 
-		checked := " " // not selected
-		if _, ok := m.selected[i]; ok {
-			checked = "x" // selected
-		}
-
 		// Render the row
-		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
+		s += fmt.Sprintf("%s %s\n", cursor, choice)
 	}
 
-	s += "\nPress q to quit.\n"
-
-	return tea.NewView(s)
+	s += "\nИспользуйте стрелки для навигации и enter для выбора\n"
+	s += "Нажмите q для выхода\n"
+	return s
 }
 
 func main() {
