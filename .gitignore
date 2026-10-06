@@ -1,6 +1,10 @@
 # Скомпилированные бинарники
 *.exe
 *.dll
+simple-archiver
+
+bin/
+tmp/
 
 # Папки IDE
 .idea/
