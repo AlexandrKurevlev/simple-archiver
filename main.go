@@ -404,9 +404,9 @@ func (m model) viewMenu() string {
 func (m model) viewInput() string {
 	s := "=== Простой архиватор ===\n\n"
 	switch m.state {
-	case "menu":
+	case "compress":
 		s += "Введите путь к файлу для сжатия:\n"
-	case "compress", "decompress":
+	case "decompress":
 		s += "Введите путь к файлу для распаковки:\n"
 	}
 
